@@ -5,6 +5,7 @@ import {CreateUserAttributes} from "../../../application/use_cases/userAttribute
 import {UpdateUserAttributes} from "../../../application/use_cases/userAttributes/UpdateUserAttributes";
 import {FindUserAttributesByUserId} from "../../../application/use_cases/userAttributes/FindUserAttributesByUserId";
 import {Types} from "mongoose";
+import Sentry from "../../logging/sentry";
 
 const userAttributesRepository = new UserAttributesRepositoryImpl()
 
@@ -17,6 +18,7 @@ export const createUserAttributes = async (req: AuthenticatedRequest, res: Respo
         const userAttributes = await useCase.execute({userId: objectUserId, age, gender, weight, weightUnit, height, heightUnit, goals, allergies});
         res.status(201).json({ userAttributes });
     } catch (error) {
+        Sentry.captureException(error);
         if (error instanceof Error) {
             res.status(400).json({ message: error.message });
         } else {
@@ -34,6 +36,7 @@ export const updateUserAttributes = async (req: AuthenticatedRequest, res: Respo
         const userAttributes = await useCase.execute({userId: objectUserId, age, gender, weight, weightUnit, height, heightUnit, goals, allergies});
         res.status(200).json({ userAttributes });
     } catch (error) {
+        Sentry.captureException(error);
         if (error instanceof Error) {
             res.status(400).json({ message: error.message });
         } else {
@@ -49,6 +52,7 @@ export const findUserAttributesByUserId = async (req: AuthenticatedRequest, res:
         const userAttributes = await useCase.execute(userId);
         res.status(200).json({ userAttributes });
     } catch (error) {
+        Sentry.captureException(error);
         if (error instanceof Error) {
             res.status(400).json({ message: error.message });
         } else {
