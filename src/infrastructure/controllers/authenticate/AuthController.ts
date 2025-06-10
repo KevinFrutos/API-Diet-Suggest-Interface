@@ -3,6 +3,7 @@ import { UserRepositoryImpl } from '../../db/user/UserRepositoryImpl';
 import { RegisterUser } from '../../../application/use_cases/user/RegisterUser';
 import { LoginUser } from '../../../application/use_cases/user/LoginUser';
 import { RedisCacheService } from "../../cache/RedisCacheService";
+import Sentry from "../../logging/sentry";
 
 const cacheService = new RedisCacheService();
 const userRepository = new UserRepositoryImpl();
@@ -14,6 +15,7 @@ export const register = async (req: Request, res: Response) => {
         const token = await useCase.execute(email, password);
         res.status(201).json({ token });
     } catch (error) {
+        Sentry.captureException(error);
         if (error instanceof Error) {
             res.status(400).json({ message: error.message });
         } else {
@@ -29,6 +31,7 @@ export const login = async (req: Request, res: Response) => {
         const token = await useCase.execute(email, password);
         res.status(200).json({ token });
     } catch (error) {
+        Sentry.captureException(error);
         if (error instanceof Error) {
             res.status(400).json({ message: error.message });
         } else {

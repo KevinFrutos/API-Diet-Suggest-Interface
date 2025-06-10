@@ -3,6 +3,7 @@ import axios from 'axios';
 import dotenv from 'dotenv';
 import {ChatMessage, GroqCloudRequestDTO} from "../DTO/GroqCloud/GroqCloudRequestDTO";
 import {ChatCompletionResponse} from "../DTO/GroqCloud/GroqCloudResponseDTO";
+import Sentry from "../logging/sentry";
 
 dotenv.config();
 
@@ -42,6 +43,7 @@ export class GroqCloudService implements ILLMService {
 
             return this.parseResponse(response.data);
         } catch (error) {
+            Sentry.captureException(error);
             if (axios.isAxiosError(error)) {
                 throw new Error(`Axios error: ${error.response?.status} ${error.response?.data}`);
             } else {
@@ -54,6 +56,7 @@ export class GroqCloudService implements ILLMService {
         try {
             return response.choices[0].message.content.trim();
         } catch (error) {
+            Sentry.captureException(error);
             throw error;
         }
     }
