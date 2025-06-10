@@ -15,6 +15,25 @@ jest.mock('../src/infrastructure/cache/RedisCacheService', () => {
     };
 });
 
+jest.mock('../src/infrastructure/logging/sentry', () => {
+    return {
+        __esModule: true,
+        default: {
+            init: jest.fn(),
+            captureException: jest.fn(),
+            captureMessage: jest.fn(),
+            setUser: jest.fn(),
+            Handlers: {
+                requestHandler: jest.fn(() => (req: any, res: any, next: any) => next()),
+                tracingHandler: jest.fn(() => (req: any, res: any, next: any) => next()),
+                errorHandler: jest.fn(() => (err: any, req: any, res: any, next: any) => next(err)),
+            },
+            setupExpressErrorHandler: jest.fn(),
+            setupExpressErrorErrorHandler: jest.fn(),
+        },
+    };
+});
+
 
 beforeAll(async () => {
     mongoServer = await MongoMemoryServer.create();
